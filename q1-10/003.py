@@ -1,23 +1,10 @@
 import cv2
 import numpy as np
-
-def BGR2GRAY(img):
-    B = img[:, :, 0].copy()
-    G = img[:, :, 1].copy()
-    R = img[:, :, 2].copy()
-
-    out = 0.2126 * R + 0.7152 * G + 0.0722 * B
-
-    return out
-
-def binalization(img, threshold):
-    img[img < threshold] = 0
-    img[img >= threshold] = 255
-    return img
+import lib0110
 
 img = cv2.imread("../Gasyori100knock/assets/imori.jpg")
-grayimage = BGR2GRAY(img)
-ans = binalization(grayimage,128).astype(np.uint8)
+grayimage = lib0110.BGR2GRAY(img)
+ans = lib0110.binalization(grayimage,128).astype(np.uint8)
 
 cv2.imshow("imori", ans)
 cv2.waitKey(0)

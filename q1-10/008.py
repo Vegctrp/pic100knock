@@ -1,23 +1,10 @@
 import cv2
 import numpy as np
-
-def max_pooling(img,pixels):
-    img = img.astype(np.float64)
-    height,width,C = img.shape
-
-    out = np.zeros((height,width,3))
-    gridx = width // pixels
-    gridy = height // pixels
-    for y in range(gridy):
-        for x in range(gridx):
-            for col in range(3):
-                out[y*pixels:(y+1)*pixels, x*pixels:(x+1)*pixels, col] = np.max(img[y*pixels:(y+1)*pixels, x*pixels:(x+1)*pixels, col])
-    return out
-
+import lib0110
 
 if __name__ == '__main__':
     img = cv2.imread("../Gasyori100knock/Question_01_10/imori.jpg")
-    ans = max_pooling(img,8).astype(np.uint8)
+    ans = lib0110.max_pooling(img,8).astype(np.uint8)
 
     cv2.imshow("imori", ans)
     cv2.waitKey(0)
