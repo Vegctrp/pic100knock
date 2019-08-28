@@ -67,13 +67,12 @@ def NearestNeighbor_interpolation(img, ax, ay):
     height,width,C = img.shape
     yheight = int(ay * height)
     ywidth = int(ax * width)
-    out = np.zeros((yheight, ywidth, 3))
-    for yy in range(yheight):
-        for yx in range(ywidth):
-            xy = np.round(float(yy) / ay)
-            xx = np.round(float(yx) / ax)
-            for col in range(3):
-                out[yy,yx,col] = img[int(xy), int(xx), col]
 
+    y = np.arange(yheight).repeat(ywidth).reshape(ywidth, -1)
+    x = np.tile(np.arange(ywidth), (yheight, 1))
+    y = np.round(y / ay).astype(np.int)
+    x = np.round(x / ax).astype(np.int)
+    out = img[y,x]
+    
     np.clip(out,0,255)
     return out.astype(np.uint8)

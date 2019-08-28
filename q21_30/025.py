@@ -11,9 +11,3 @@ if __name__ == '__main__':
     cv2.waitKey(0)
     cv2.imwrite("q21_30/025.jpg", ans)
     cv2.destroyAllWindows()
-
-    plt.hist(ans.ravel(), bins=255, range=(0,255), rwidth=0.8)
-    plt.xlabel("pixel value")
-    plt.ylabel("times")
-    plt.savefig("q21_30/025result.png")
-    plt.show()
