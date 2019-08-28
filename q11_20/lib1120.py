@@ -13,7 +13,7 @@ def Smoothing_filter(img):
             for col in range(3):
                 out[y-1,x-1,col]=np.mean(padimg[y-1:y+2, x-1:x+2, col])
 
-    return out
+    return out.astype(np.uint8)
 
 
 # 12
@@ -30,7 +30,7 @@ def Motion_filter(img):
             for col in range(3):
                 out[y-1,x-1,col]=np.sum(mul * padimg[y-1:y+2, x-1:x+2, col]) / 3
 
-    return out
+    return out.astype(np.uint8)
 
 
 # 13
@@ -44,7 +44,7 @@ def MaxMin_filter(img):  # for gray-scale image
         for x in range(1,width+1):
             out[y-1,x-1]=np.max(padimg[y-1:y+2, x-1:x+2]) - np.min(padimg[y-1:y+2, x-1:x+2])
 
-    return out
+    return out.astype(np.uint8)
 
 
 # 14
@@ -64,7 +64,7 @@ def Differential_filter(img):  # for gray-scale image
     outv = np.clip(outv,0,255)
     outh = np.clip(outh,0,255)
 
-    return outv,outh
+    return outv.astype(np.uint8), outh.astype(np.uint8)
 
 
 # 15
@@ -84,7 +84,7 @@ def Sobel_filter(img):  # for gray-scale image
     outv = np.clip(outv,0,255)
     outh = np.clip(outh,0,255)
 
-    return outv,outh
+    return outv.astype(np.uint8), outh.astype(np.uint8)
 
 
 # 16
@@ -104,7 +104,7 @@ def Prewitt_filter(img):  # for gray-scale image
     outv = np.clip(outv,0,255)
     outh = np.clip(outh,0,255)
 
-    return outv,outh
+    return outv.astype(np.uint8), outh.astype(np.uint8)
 
 
 # 17
@@ -120,7 +120,7 @@ def Laplacian_filter(img):  # for gray-scale image
             out[y-1,x-1] = np.sum(kernel * padimg[y-1:y+2, x-1:x+2])
     out = np.clip(out,0,255)
 
-    return out
+    return out.astype(np.uint8)
 
 
 # 18
@@ -136,7 +136,7 @@ def Emboss_filter(img):  # for gray-scale image
             out[y-1,x-1] = np.sum(kernel * padimg[y-1:y+2, x-1:x+2])
     out = np.clip(out,0,255)
 
-    return out
+    return out.astype(np.uint8)
 
 
 # 19
@@ -159,4 +159,4 @@ def LoS_filter(img, kernel_size, sigma):  # for gray-scale image
             out[y-padding_size,x-padding_size] = np.sum(kernel * padimg[y-padding_size:y+padding_size+1, x-padding_size:x+padding_size+1])
     out = np.clip(out,0,255)
 
-    return out
+    return out.astype(np.uint8)
