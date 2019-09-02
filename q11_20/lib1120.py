@@ -81,8 +81,6 @@ def Sobel_filter(img):  # for gray-scale image
         for x in range(1,width+1):
             outv[y-1,x-1] = np.sum(vecv * padimg[y-1:y+2, x-1:x+2])
             outh[y-1,x-1] = np.sum(vech * padimg[y-1:y+2, x-1:x+2])
-    outv = np.clip(outv,0,255)
-    outh = np.clip(outh,0,255)
 
     return outv, outh
 

@@ -9,8 +9,8 @@ if __name__ == '__main__':
     img = cv2.imread("Gasyori100knock/Question_11_20/imori.jpg")
     gray_img = lib0110.BGR2GRAY(img)
     ansv, ansh = lib1120.Sobel_filter(gray_img)
-    ansv = ansv.astype(np.uint8)
-    ansh = ansh.astype(np.uint8)
+    ansv = ansv.clip(0,255).astype(np.uint8)
+    ansh = ansh.clip(0,255).astype(np.uint8)
 
     cv2.imshow("imori", ansv)
     cv2.waitKey(0)
