@@ -144,19 +144,28 @@ def max_pooling(img,pixels):
     return out
 
 # 09
-def Gaussian_filter(img):
+def Gaussian_filter(img, k, sigma):
+    if len(img.shape)==2:
+        img = np.expand_dims(img, axis=-1)
     img = img.astype(np.float64)
-    padimg = np.pad(img,[(1,1),(1,1),(0,0)],'constant')
+    pad_size = k // 2
+    padimg = np.pad(img,[(pad_size,pad_size),(pad_size,pad_size),(0,0)],'constant')
     height,width,C = img.shape
-    out = np.zeros((height,width,3))
+    out = np.zeros((height,width,C))
 
-    mul = np.array([[1,2,1],[2,4,2],[1,2,1]])
+    mul = np.zeros((k,k))
+    for y in range(-pad_size, pad_size+1):
+        for x in range(-pad_size, pad_size+1):
+            mul[y+pad_size, x+pad_size] = np.exp(-(x**2 + y**2) / (2*(sigma**2)))
+    mul /= mul.sum()
 
-    for y in range(1,height+1):
-        for x in range(1,width+1):
-            for col in range(3):
-                out[y-1,x-1,col]=np.sum(mul * padimg[y-1:y+2, x-1:x+2, col]) / 16
+    for y in range(pad_size,height+pad_size):
+        for x in range(pad_size,width+pad_size):
+            for col in range(C):
+                out[y-pad_size,x-pad_size,col]=np.sum(mul * padimg[y-pad_size:y+pad_size+1, x-pad_size:x+pad_size+1, col])
 
+    if C==1:
+        out = out.reshape((height,width))
     return out
 
 # 10
