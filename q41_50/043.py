@@ -10,9 +10,7 @@ from q21_30 import lib2130
 if __name__ == '__main__':
     img = cv2.imread("Gasyori100knock/Question_41_50/imori.jpg")
 
-    edge, angle = lib4150.Canny_edge_strength(img)
-    edge = lib4150.Canny_nms(edge, angle)
-    edge = lib4150.Canny_threshold_processing(edge, HT=100, LT=30)
+    edge = lib4150.Canny(img, Gaussian_k=5, Gaussian_sigma=1.4, HT=100, LT=30)
     edge = edge.clip(0,255).astype(np.uint8)
 
     cv2.imshow("imori", edge)

@@ -6,10 +6,10 @@ from q01_10 import lib0110
 from q11_20 import lib1120
 
 # 41
-def Canny_edge_strength(img):
+def Canny_edge_strength(img, k, sigma):
     img = img.astype(np.float64)
     img1 = lib0110.BGR2GRAY(img)
-    img2 = lib0110.Gaussian_filter(img1, k=5, sigma=1.4)
+    img2 = lib0110.Gaussian_filter(img1, k=k, sigma=sigma)
     img3v, img3h = lib1120.Sobel_filter(img2)
     edge = np.sqrt(img3h * img3h + img3v * img3v)
     img3h[img3h == 0] = 1e-5
@@ -35,7 +35,7 @@ def Canny_nms(edge, angle):
             if angle[y,x]==0:
                 if x!=0:
                     b = edge[y, x-1]
-                if x!=height-1:
+                if x!=width-1:
                     c = edge[y, x+1]
             elif angle[y,x]==45:
                 if x!=0 and y!=height-1:
@@ -76,3 +76,9 @@ def Canny_threshold_processing(edge, HT, LT):
                         if padimg[y+dy, x+dx]>HT:
                             e2[y,x] = 255
     return e2
+
+def Canny(img, Gaussian_k, Gaussian_sigma, HT, LT):
+    edge, angle = Canny_edge_strength(img, k=Gaussian_k, sigma=Gaussian_sigma)
+    edge = Canny_nms(edge, angle)
+    edge = Canny_threshold_processing(edge, HT=HT, LT=LT)
+    return edge
