@@ -13,7 +13,7 @@ if __name__ == '__main__':
     Y = lib3140.IDCTs(fY, t=8, k=8, channels=1)
     Cb = lib3140.IDCTs(fCb, t=8, k=8, channels=1)
     Cr = lib3140.IDCTs(fCr, t=8, k=8, channels=1)
-    out = lib3140.YCbCr2BGR(Y,Cb,Cr)
+    out = lib3140.YCbCr2BGR(Y,Cb,Cr).clip(0,255).astype(np.uint8)
     cv2.imshow("imori", out)
     cv2.waitKey(0)
     cv2.imwrite("q31_40/040.jpg", out)

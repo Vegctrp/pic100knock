@@ -13,8 +13,8 @@ def Histogram_normalization(img, ymin, ymax):
     out = (ymax - ymin) / (xmax - xmin) * (out - xmin) + ymin
     out[out < ymin] = ymin
     out[ymax <out] = ymax
-    np.clip(out,0,255)
-    return out.astype(np.uint8)
+    np.clip(out,ymin,ymax)
+    return out
 
 
 # 22
@@ -27,8 +27,7 @@ def Histogram_operation(img, ymean, ysd):
     xsd = np.std(img)
     
     out = ysd / xsd * (out - xmean) + ymean
-    np.clip(out,0,255)
-    return out.astype(np.uint8)
+    return out
 
 
 # 23
@@ -45,9 +44,7 @@ def Histogram_equalization(img):
         sumh += len(img[index])
         Zd = Zmax / S * sumh
         out[index] = Zd
-
-    np.clip(out,0,255)
-    return out.astype(np.uint8)
+    return out
 
 
 # 24
@@ -58,7 +55,7 @@ def Gamma_correction(img, c, g):
     out = (img / c)**(1 / g)
     out *= 255
     np.clip(out,0,255)
-    return out.astype(np.uint8)
+    return out
 
 
 # 25
@@ -75,7 +72,7 @@ def NearestNeighbor_interpolation(img, ax, ay):
     out = img[y,x]
 
     np.clip(out,0,255)
-    return out.astype(np.uint8)
+    return out
 
 
 # 26
@@ -100,7 +97,7 @@ def Bi_linear_interpolation(img, ax, ay):
 
     out = (1-dx)*(1-dy)*img[ny, nx] + dx*(1-dy)*img[ny, nx+1] + dy*(1-dx)*img[ny+1, nx] + dx*dy*img[ny+1, nx+1]
     np.clip(out,0,255)
-    return out.astype(np.uint8)
+    return out
 
 
 # 27
@@ -111,7 +108,7 @@ def Bi_cubic_interpolation(img, ax, ay):
     ywidth = int(ax * width)
     out = np.zeros((yheight, ywidth, 3))
 
-    y = np.arange(yheight).repeat(ywidth).reshape(height, -1)
+    y = np.arange(yheight).repeat(ywidth).reshape(yheight, -1)
     x = np.tile(np.arange(ywidth), (yheight, 1))
     y = y / ay
     x = x / ax
@@ -148,7 +145,7 @@ def Bi_cubic_interpolation(img, ax, ay):
     for col in range(3):
         out[:, :, col] /= hsum
     np.clip(out,0,255)
-    return out.astype(np.uint8)
+    return out
 
 
 # 28
@@ -167,7 +164,7 @@ def Affine_out(img,rx,ry,fx,fy):
     iy = ry.clip(-1,height).astype(np.int)
     ix = rx.clip(-1,width).astype(np.int)
     out[fy,fx] = padimg[iy+1, ix+1]
-    return out.astype(np.uint8)
+    return out
 
 def Affine_translation(img, mx, my):
     img = img.astype(np.float64)
@@ -178,7 +175,7 @@ def Affine_translation(img, mx, my):
     fx = np.tile(np.arange(width), (height, 1))
     sx1,sy1 = Affine(fx,fy, 1,0,0,1,mx,my)
     out = Affine_out(img,sx1,sy1,fx,fy)
-    return out.astype(np.uint8)
+    return out
 
 
 # 29
@@ -191,7 +188,7 @@ def Affine_scale(img, ax, ay):
     fx = np.tile(np.arange(xsize), (ysize, 1))
     sx1,sy1 = Affine(fx,fy, ax,0,0,ay,0,0)
     out = Affine_out(img,sx1,sy1,fx,fy)
-    return out.astype(np.uint8)
+    return out
 
 
 # 30
@@ -204,7 +201,7 @@ def Affine_rotation_corner(img, a):
     fx = np.tile(np.arange(xsize), (ysize, 1))
     sx1,sy1 = Affine(fx,fy, np.cos(-np.pi*a/180),-np.sin(-np.pi*a/180),np.sin(-np.pi*a/180),np.cos(-np.pi*a/180),0,0)
     out = Affine_out(img,sx1,sy1,fx,fy)
-    return out.astype(np.uint8)
+    return out
 
 
 def Affine_rotation_center(img, a):
@@ -218,4 +215,4 @@ def Affine_rotation_center(img, a):
     fx = np.tile(np.arange(xsize), (ysize, 1))
     sx1,sy1 = Affine(fx-xcenter,fy-ycenter, np.cos(-np.pi*a/180),-np.sin(-np.pi*a/180),np.sin(-np.pi*a/180),np.cos(-np.pi*a/180),-xcenter,-ycenter)
     out = Affine_out(img,sx1,sy1,fx,fy)
-    return out.astype(np.uint8)
+    return out

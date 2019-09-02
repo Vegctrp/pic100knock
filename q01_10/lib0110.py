@@ -13,7 +13,7 @@ def BGR2RGB(img):
     out[:, :, 1] = G
     out[:, :, 2] = B
 
-    return out.astype(np.uint8)
+    return out
 
 
 # 02
@@ -25,14 +25,14 @@ def BGR2GRAY(img):
 
     out = 0.2126 * R + 0.7152 * G + 0.0722 * B
 
-    return out.astype(np.uint8)
+    return out
 
 
 # 03
 def binalization(img, threshold): # for gray-scale image
     img[img < threshold] = 0
     img[img >= threshold] = 255
-    return img.astype(np.uint8)
+    return img
 
 
 # 04
@@ -52,7 +52,7 @@ def OTSU_binalization(img): # for gray-scale image
             use_t = t
     img[img < use_t]=0
     img[img >= use_t]=255
-    return img.astype(np.uint8)
+    return img
 
 
 # 05
@@ -99,7 +99,7 @@ def HSV2BGR(H,S,V):
             img[:, :, col][index] = (V - C)[index] + chv[i][col][index]
     
     img = np.clip(img,0,1)
-    return (img*255).astype(np.uint8)
+    return img*255
 
 def hue_inversion(img):
     H,S,V = BGR2HSV(img)
@@ -113,7 +113,7 @@ def color_reduction(img):
     height,width,C = img.shape
 
     out = (img // 64) *64 + 32
-    return out.astype(np.uint8)
+    return out
 
 # 07
 def mean_pooling(img,pixels):
@@ -127,7 +127,7 @@ def mean_pooling(img,pixels):
         for x in range(gridx):
             for col in range(3):
                 out[y*pixels:(y+1)*pixels, x*pixels:(x+1)*pixels, col] = np.mean(img[y*pixels:(y+1)*pixels, x*pixels:(x+1)*pixels, col])
-    return out.astype(np.uint8)
+    return out
 
 # 08
 def max_pooling(img,pixels):
@@ -141,7 +141,7 @@ def max_pooling(img,pixels):
         for x in range(gridx):
             for col in range(3):
                 out[y*pixels:(y+1)*pixels, x*pixels:(x+1)*pixels, col] = np.max(img[y*pixels:(y+1)*pixels, x*pixels:(x+1)*pixels, col])
-    return out.astype(np.uint8)
+    return out
 
 # 09
 def Gaussian_filter(img):
@@ -157,7 +157,7 @@ def Gaussian_filter(img):
             for col in range(3):
                 out[y-1,x-1,col]=np.sum(mul * padimg[y-1:y+2, x-1:x+2, col]) / 16
 
-    return out.astype(np.uint8)
+    return out
 
 # 10
 def Median_filter(img):
@@ -171,4 +171,4 @@ def Median_filter(img):
             for col in range(3):
                 out[y-1,x-1,col]=np.median(padimg[y-1:y+2, x-1:x+2, col])
 
-    return out.astype(np.uint8)
+    return out

@@ -11,7 +11,7 @@ if __name__ == '__main__':
     
     g = lib3140.DFT(img, 3)
     g = lib3140.highpass_filter(g, ratio=0.1, channel=3)
-    ans = lib3140.iDFT(g, 3)
+    ans = lib3140.iDFT(g, 3).clip(0,255).astype(np.uint8)
     cv2.imshow("imori", ans)
     cv2.waitKey(0)
     cv2.imwrite("q31_40/034.jpg", ans)

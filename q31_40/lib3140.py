@@ -15,7 +15,7 @@ def Affine_skew(img, dx=0, dy=0):
     fx = np.tile(np.arange(xsize), (ysize, 1))
     sx1,sy1 = lib2130.Affine(fx,fy, 1,dx/height,dy/width,1,0,0)
     out = lib2130.Affine_out(img,sx1,sy1,fx,fy)
-    return out.astype(np.uint8)
+    return out
 
 
 # 32
@@ -45,13 +45,12 @@ def iDFT(G, channel):
             for k in range(width):
                 out[l,k,c] = np.abs(np.sum(G[:, :, c] * np.exp(2j * np.pi * (k*ix/width + l*iy/height)))) / np.sqrt(height * width)
 
-    out = np.clip(out,0,255).astype(np.uint8)
     return out
 
 
 def DFT_Power_spectrum_out(G):
     out = np.abs(G)
-    return out.clip(0,255).astype(np.uint8)
+    return out
 
 
 # 33
@@ -243,7 +242,7 @@ def YCbCr2BGR(Y, Cb, Cr):
     img[:, :, 1] = G
     img[:, :, 2] = R
 
-    return img.clip(0,255).astype(np.uint8)
+    return img
 
 
 # 40

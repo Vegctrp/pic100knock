@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
     img = cv2.imread("Gasyori100knock/Question_21_30/imori.jpg")
     
-    ans = lib2130.Histogram_equalization(img)
+    ans = lib2130.Histogram_equalization(img).clip(0,255).astype(np.uint8)
     cv2.imshow("imori", ans)
     cv2.waitKey(0)
     cv2.imwrite("q21_30/023.jpg", ans)

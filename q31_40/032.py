@@ -10,13 +10,13 @@ if __name__ == '__main__':
     img = cv2.imread("Gasyori100knock/Question_31_40/imori.jpg")
     
     g = lib3140.DFT(img, 3)
-    ans = lib3140.iDFT(g, 3)
+    ans = lib3140.iDFT(g, 3).clip(0,255).astype(np.uint8)
     cv2.imshow("imori", ans)
     cv2.waitKey(0)
     cv2.imwrite("q31_40/032_1.jpg", ans)
     cv2.destroyAllWindows()
 
-    ps = lib3140.DFT_Power_spectrum_out(g)
+    ps = lib3140.DFT_Power_spectrum_out(g).clip(0,255).astype(np.uint8)
     cv2.imshow("imori", ps)
     cv2.waitKey(0)
     cv2.imwrite("q31_40/032_2.jpg", ps)
