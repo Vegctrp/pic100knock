@@ -18,7 +18,7 @@ if __name__ == '__main__':
     cv2.imwrite("q41_50/046a.jpg", canny_edge)
     cv2.destroyAllWindows()
 
-    out = lib4150.Hough(img, canny_edge, 20)
+    out = lib4150.Hough(img, canny_edge, 10)
 
     cv2.imshow("imori", out)
     cv2.waitKey(0)
