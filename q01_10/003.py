@@ -9,5 +9,5 @@ if __name__ == '__main__':
 
     cv2.imshow("imori", ans)
     cv2.waitKey(0)
-    cv2.imwrite("q1-10/003.jpg", ans)
+    cv2.imwrite("q01_10/003.jpg", ans)
     cv2.destroyAllWindows()

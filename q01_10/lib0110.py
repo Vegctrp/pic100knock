@@ -144,12 +144,12 @@ def max_pooling(img,pixels):
     return out
 
 # 09
-def Gaussian_filter(img, k, sigma):
+def Gaussian_filter(img, k, sigma, padding_type='constant'):
     if len(img.shape)==2:
         img = np.expand_dims(img, axis=-1)
     img = img.astype(np.float64)
     pad_size = k // 2
-    padimg = np.pad(img,[(pad_size,pad_size),(pad_size,pad_size),(0,0)],'constant')
+    padimg = np.pad(img,[(pad_size,pad_size),(pad_size,pad_size),(0,0)],padding_type)
     height,width,C = img.shape
     out = np.zeros((height,width,C))
 

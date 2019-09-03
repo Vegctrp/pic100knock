@@ -9,8 +9,8 @@ from q11_20 import lib1120
 def Canny_edge_strength(img, k, sigma):
     img = img.astype(np.float64)
     img1 = lib0110.BGR2GRAY(img)
-    img2 = lib0110.Gaussian_filter(img1, k=k, sigma=sigma)
-    img3v, img3h = lib1120.Sobel_filter(img2)
+    img2 = lib0110.Gaussian_filter(img1, k=k, sigma=sigma, padding_type='edge')
+    img3v, img3h = lib1120.Sobel_filter(img2, padding_type='edge')
     edge = np.sqrt(img3h * img3h + img3v * img3v)
     img3h[img3h == 0] = 1e-5
     tan = np.arctan(img3v / img3h)
@@ -64,6 +64,7 @@ def Canny_threshold_processing(edge, HT, LT):
     height, width = edge.shape
     e2 = np.zeros_like(edge)
     padimg = np.pad(edge,[(1,1),(1,1)],'constant')
+    mul = np.array([[1,1,1],[1,0,1],[1,1,1]])
     for y in range(height):
         for x in range(width):
             if edge[y,x]>HT:
@@ -71,10 +72,8 @@ def Canny_threshold_processing(edge, HT, LT):
             elif edge[y,x]<LT:
                 e2[y,x]=0
             else:
-                for dy in range(2):
-                    for dx in range(2):
-                        if padimg[y+dy, x+dx]>HT:
-                            e2[y,x] = 255
+                if np.max(padimg[y:y+3, x:x+3] * mul) > HT:
+                    e2[y,x]=255
     return e2
 
 def Canny(img, Gaussian_k, Gaussian_sigma, HT, LT):
@@ -89,7 +88,7 @@ def Hough_transform(edge):
     height, width = edge.shape
     rmax = int(np.sqrt(height**2 + width**2))
 
-    table = np.zeros((rmax, 180))
+    table = np.zeros((rmax, 180),dtype=np.int)
     for y in range(height):
         for x in range(width):
             if edge[y,x]!=0:
@@ -99,6 +98,8 @@ def Hough_transform(edge):
                     table[r, t] += 1
     return table
 
+
+# 45
 def Hough_NMS(table, line_num):
     height, width = table.shape
     pix = height* width

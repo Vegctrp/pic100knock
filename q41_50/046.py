@@ -12,7 +12,13 @@ if __name__ == '__main__':
     #img = cv2.imread("../../../Desktop/download.jpg")
 
     canny_edge = lib4150.Canny(img, Gaussian_k=5, Gaussian_sigma=1.4, HT=100, LT=30).clip(0,255).astype(np.uint8)
-    out = lib4150.Hough(img, canny_edge, 30)
+    
+    cv2.imshow("imori", canny_edge)
+    cv2.waitKey(0)
+    cv2.imwrite("q41_50/046a.jpg", canny_edge)
+    cv2.destroyAllWindows()
+
+    out = lib4150.Hough(img, canny_edge, 20)
 
     cv2.imshow("imori", out)
     cv2.waitKey(0)

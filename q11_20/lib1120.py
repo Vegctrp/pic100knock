@@ -68,9 +68,9 @@ def Differential_filter(img):  # for gray-scale image
 
 
 # 15
-def Sobel_filter(img):  # for gray-scale image
+def Sobel_filter(img, padding_type='constant'):  # for gray-scale image
     img = img.astype(np.float64)
-    padimg = np.pad(img,[(1,1),(1,1)],'constant')
+    padimg = np.pad(img,[(1,1),(1,1)],padding_type)
     height,width = img.shape
     outv = np.zeros((height,width))
     vecv = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
