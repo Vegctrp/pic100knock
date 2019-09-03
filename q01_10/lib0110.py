@@ -29,14 +29,14 @@ def BGR2GRAY(img):
 
 
 # 03
-def binalization(img, threshold): # for gray-scale image
+def binarization(img, threshold): # for gray-scale image
     img[img < threshold] = 0
     img[img >= threshold] = 255
     return img
 
 
 # 04
-def OTSU_binalization(img): # for gray-scale image
+def OTSU_binarization(img): # for gray-scale image
     max_t=0
     use_t=-1
     for t in range(0,256):
