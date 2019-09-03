@@ -82,3 +82,119 @@ def Canny(img, Gaussian_k, Gaussian_sigma, HT, LT):
     edge = Canny_nms(edge, angle)
     edge = Canny_threshold_processing(edge, HT=HT, LT=LT)
     return edge
+
+
+# 44
+def Hough_transform(edge):
+    height, width = edge.shape
+    rmax = int(np.sqrt(height**2 + width**2))
+
+    table = np.zeros((rmax, 180))
+    for y in range(height):
+        for x in range(width):
+            if edge[y,x]!=0:
+                for t in range(180):
+                    tr = np.pi * t / 180
+                    r = int(np.cos(tr) * x + np.sin(tr) * y)
+                    table[r, t] += 1
+    return table
+
+def Hough_NMS(table, line_num):
+    height, width = table.shape
+    pix = height* width
+    padimg = np.pad(table,[(1,1),(1,1)],'constant')
+
+    endflag = 0
+    for _ in range(1):
+        for y in range(1,height+1):
+            for x in range(1,width+1):
+                if np.argmax(padimg[y-1:y+2, x-1:x+2]) != 4 and padimg[y,x]>0:
+                    padimg[y,x]=0
+                    pix = pix-1
+                    if pix<=line_num:
+                        endflag = 1
+                if endflag==1:
+                    break
+            if endflag==1:
+                break
+        if endflag==1:
+            break
+    t2 = padimg[1:-1, 1:-1]
+    index = np.argsort(t2.ravel())[-line_num:]
+    hough = np.zeros_like(table)
+    hough[index//180, index%180] = 255
+    return hough
+
+
+# 46
+def rHough_transform(img, table):
+    height, width, _ = img.shape
+    index = np.where(table == 255)
+    r = index[0]
+    t = np.pi * index[1] / 180
+    for rr,tt in zip(r,t):
+        for x in range(width):
+            y = int((- np.cos(tt) * x + rr) / np.maximum(np.sin(tt),1e-5))
+            if y>=0 and y<=height-1:
+                img[y,x,0]=0
+                img[y,x,1]=0
+                img[y,x,2]=255
+        for y in range(height):
+            x = int((- np.sin(tt) * y + rr) / np.maximum(np.cos(tt),1e-5))
+            if x>=0 and x<=width-1:
+                img[y,x,0]=0
+                img[y,x,1]=0
+                img[y,x,2]=255
+    return img
+
+def Hough(img, edge, linenum):
+    out = Hough_transform(edge).clip(0,255).astype(np.uint8)
+    out = Hough_NMS(out,linenum).clip(0,255).astype(np.uint8)
+    out = rHough_transform(img, out)
+    return out
+
+
+# 47
+def Morphology_dilation(img, time): # for binarizated-image
+    height, width = img.shape
+    mul = np.array([[0,1,0],[1,0,1],[0,1,0]])
+
+    for _ in range(time):
+        padimg = np.pad(img,[(1,1),(1,1)],'constant')
+        img2 = img.copy()
+        for y in range(height):
+            for x in range(width):
+                if np.sum(mul * padimg[y:y+3, x:x+3]) >= 255:
+                    img2[y,x]=255
+        img = img2
+    return img
+
+
+# 48
+def Morphology_erosion(img, time): # for binarizated-image
+    height, width = img.shape
+    mul = np.array([[0,1,0],[1,0,1],[0,1,0]])
+
+    for _ in range(time):
+        padimg = np.pad(img,[(1,1),(1,1)],'constant')
+        img2 = img.copy()
+        for y in range(height):
+            for x in range(width):
+                if np.sum(mul * padimg[y:y+3, x:x+3]) < 255*4:
+                    img2[y,x]=0
+        img = img2
+    return img
+
+
+# 49
+def Opening_operation(img, time): # for binarizated-image
+    img2 = Morphology_erosion(img, time)
+    out = Morphology_dilation(img2, time)
+    return out
+
+
+# 50
+def Closing_operation(img, time): # for binarizated-image
+    img2 = Morphology_dilation(img, time)
+    out = Morphology_erosion(img2, time)
+    return out
