@@ -161,7 +161,7 @@ def Morphology_dilation(img, time): # for binarizated-image
     mul = np.array([[0,1,0],[1,0,1],[0,1,0]])
 
     for _ in range(time):
-        padimg = np.pad(img,[(1,1),(1,1)],'constant')
+        padimg = np.pad(img,[(1,1),(1,1)],'edge')
         img2 = img.copy()
         for y in range(height):
             for x in range(width):
@@ -177,7 +177,7 @@ def Morphology_erosion(img, time): # for binarizated-image
     mul = np.array([[0,1,0],[1,0,1],[0,1,0]])
 
     for _ in range(time):
-        padimg = np.pad(img,[(1,1),(1,1)],'constant')
+        padimg = np.pad(img,[(1,1),(1,1)],'edge')
         img2 = img.copy()
         for y in range(height):
             for x in range(width):
