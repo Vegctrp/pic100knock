@@ -109,3 +109,99 @@ def Matching_ZNCC(img, part):
                 max_value = S
     out = cv2.rectangle(img, (max_x, max_y), (max_x+pW-1, max_y+pH-1), (0,0,255), thickness=1)
     return out
+
+
+# 58
+def Labeling_4nn(img):
+    height, width, _ = img.shape
+    img2 = np.mean(img, axis=2)
+    print(img2.shape)
+
+    table={}
+    mat=np.zeros_like(img2)
+    col=0
+    maxv=1000000000
+    for y in range(height):
+        for x in range(width):
+            if img2[y,x]==0:
+                continue
+            up=maxv
+            left=maxv
+            if y!=0:
+                if mat[y-1,x]!=0:
+                    up=mat[y-1,x]
+            if x!=0:
+                if mat[y,x-1]!=0:
+                    left=mat[y,x-1]
+            if up+left==maxv*2:
+                col+=1
+                mat[y,x]=col
+                table[col]=col
+            else:
+                mat[y,x]=min(up,left)
+                if up!=maxv and left!=maxv:
+                    table[max(up,left)] = table[min(up,left)]
+    
+    out = np.zeros_like(mat)
+    for y in range(height):
+        for x in range(width):
+            num = int(mat[y,x])
+            if num!=0:
+                out[y,x] = table[num]
+    out = out * 255 / (col+1)
+    return out.clip(0,255).astype(np.uint8)
+
+
+# 59
+def Labeling_8nn(img):
+    height, width, _ = img.shape
+    img2 = np.mean(img, axis=2)
+    print(img2.shape)
+
+    table={}
+    mat=np.zeros_like(img2)
+    col=0
+    maxv=1000000000
+    for y in range(height):
+        for x in range(width):
+            if img2[y,x]==0:
+                continue
+            dis = []
+            if y!=0:
+                if mat[y-1,x]!=0:
+                    dis.append(mat[y-1,x])
+            if x!=0:
+                if mat[y,x-1]!=0:
+                    dis.append(mat[y,x-1])
+            if x!=0 and y!=0:
+                if mat[y-1,x-1]!=0:
+                    dis.append(mat[y-1,x-1])
+            if y!=0 and x!=width-1:
+                if mat[y-1,x+1]!=0:
+                    dis.append(mat[y-1,x+1])
+            if len(dis)==0:
+                col+=1
+                mat[y,x]=col
+                table[col]=col
+            else:
+                direction = min(dis)
+                mat[y,x]=direction
+                for i in dis:
+                    table[i] = table[direction]
+
+    out = np.zeros_like(mat)
+    for y in range(height):
+        for x in range(width):
+            num = int(mat[y,x])
+            if num!=0:
+                out[y,x] = table[num]
+    out = out * 255 / (col+1)
+    return out.clip(0,255).astype(np.uint8)
+
+
+# 60
+def Alpha_blend(img1, img2, alpha):
+    img1 = img1.astype(np.float64)
+    img2 = img2.astype(np.float64)
+    out = img1 * alpha + img2 * (1-alpha)
+    return out
