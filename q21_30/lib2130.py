@@ -4,6 +4,8 @@ import numpy as np
 # 21 gray_scale_transformation_linear
 def Histogram_normalization(img, ymin, ymax):
     img = img.astype(np.float64)
+    if len(img.shape)==2:
+        img = np.expand_dims(img, axis=-1)
     height,width,C = img.shape
     out = img.copy()
 
@@ -14,6 +16,8 @@ def Histogram_normalization(img, ymin, ymax):
     out[out < ymin] = ymin
     out[ymax <out] = ymax
     np.clip(out,ymin,ymax)
+    if C==1:
+        out = out.reshape((height,width))
     return out
 
 
