@@ -78,6 +78,8 @@ def NearestNeighbor_interpolation(img, ax, ay):
 # 26
 def Bi_linear_interpolation(img, ax, ay):
     img = img.astype(np.float64)
+    if len(img.shape)==2:
+        img = np.expand_dims(img, axis=-1)
     height,width,C = img.shape
     yheight = int(ay * height)
     ywidth = int(ax * width)
@@ -92,10 +94,12 @@ def Bi_linear_interpolation(img, ax, ay):
     nx = np.minimum(nx, height-2)
     dy = y - ny
     dx = x - nx
-    dy = np.repeat(np.expand_dims(dy, axis=-1), 3, axis=-1)
-    dx = np.repeat(np.expand_dims(dx, axis=-1), 3, axis=-1)
+    dy = np.repeat(np.expand_dims(dy, axis=-1), C, axis=-1)
+    dx = np.repeat(np.expand_dims(dx, axis=-1), C, axis=-1)
 
     out = (1-dx)*(1-dy)*img[ny, nx] + dx*(1-dy)*img[ny, nx+1] + dy*(1-dx)*img[ny+1, nx] + dx*dy*img[ny+1, nx+1]
+    if C==1:
+        out = out.reshape((yheight,ywidth))
     np.clip(out,0,255)
     return out
 
