@@ -180,3 +180,87 @@ def Thinning_ZhangSuen(img):
                         i2[y,x]=1
         print(count)
     return (1-i2)*255
+
+
+# 66
+def HOG1_gradient(img):
+    gray = lib0110.BGR2GRAY(img)
+    height, width = gray.shape
+
+    pad = np.pad(gray, [(1,1),(1,1)], 'edge')
+    gx = pad[1:-1, 2:] - pad[1:-1, :-2]
+    gy = pad[2:, 1:-1] - pad[:-2, 1:-1]
+
+    mag = np.sqrt(gx*gx + gy*gy)
+    gx[gx==0] = 1e-5
+    ang = np.arctan(gy / gx)
+
+    ang[ang < 0] = np.pi + ang[ang < 0]
+    a2 = np.zeros_like(ang)
+
+    for i in range(9):
+        index = np.where((ang > (np.pi/9)*i) & (ang <=(np.pi/9)*(i+1)))
+        a2[index] = i
+    return mag, a2
+
+# 67
+def HOG2_histogram(mag, ang, N=8):
+    height, width = ang.shape
+    img = np.tile(ang, (9,1,1))
+    i2 = np.zeros_like(img)
+    for i in range(9):
+        mat = img[i, :, :]
+        m2 = np.zeros_like(mat)
+        m2[np.where(mat==i)] = 1
+        i2[i, :, :] = m2 * mag
+    
+    i3 = np.zeros((9, height//N, width//N))
+    for y in range(height//N):
+        for x in range(width//N):
+            for j in range(N):
+                for i in range(N):
+                    i3[int(ang[y*4+j,x*4+i]), y, x] += mag[y*4+j, x*4+i]
+    return i3
+
+# 68
+def HOG3_normalization(img, C=3, epsilon=1):
+    C, height, width = img.shape
+    for y in range(height):
+        for x in range(width):
+            img[:, y, x] /= np.sqrt(np.sum(img[:, max(y-1,0):min(y+2,height), max(x-1,0):min(x+2,width)]) + epsilon)
+    return img
+
+# 69
+def HOG_draw(gr, img):
+    gray = lib0110.BGR2GRAY(img)
+    add = np.zeros_like(gray)
+    C, height, width = gr.shape
+    for y in range(height):
+        for x in range(width):
+            mat = np.zeros((8,8))
+            for c in range(C):
+                score = gr[c,y,x] * 10
+                angle = np.pi * (20*c+10) /180
+                print(angle)
+                for xx in range(-4,4):
+                    yy = xx * np.tan(angle)
+                    yy = int(np.round(yy))
+                    if yy>=-4 and yy<4:
+                        mat[yy+4, xx+4] = max(score, mat[yy+4, xx+4])
+                for yy in range(-4,4):
+                    a = np.tan(angle)
+                    if a==0:
+                        a = 1e-5
+                    xx = yy / a
+                    xx = int(np.round(xx))
+                    if xx>=-4 and xx<4:
+                        mat[yy+4, xx+4] = max(score, mat[yy+4, xx+4])
+            add[y*8:(y+1)*8, x*8:(x+1)*8] = mat
+    return add
+
+def HOG(img):
+    mag, ang = HOG1_gradient(img)
+    angs = HOG2_histogram(mag, ang, N=8)
+    outs = HOG3_normalization(angs, C=3, epsilon=1)
+    out = HOG_draw(outs, img)
+    return out
