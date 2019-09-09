@@ -264,3 +264,12 @@ def HOG(img):
     outs = HOG3_normalization(angs, C=3, epsilon=1)
     out = HOG_draw(outs, img)
     return out
+
+
+# 70
+def color_tracking_blue(img):
+    H,S,V = lib0110.BGR2HSV(img)
+    out = np.zeros_like(H)
+    index = np.where((H>=180) & (H<=260))
+    out[index] = 255
+    return out
