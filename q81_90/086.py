@@ -20,8 +20,12 @@ if __name__ == '__main__':
     database = lib8190.Ir1_makedatabase('Gasyori100knock/Question_81_90/dataset/',filenames,labels)
     
     test_filenames=[]
+    test_labels=[]
     for i,name in enumerate(['akahara','madara']):
         for num in range(1,3):
             test_filenames.append("test_"+name+"_"+str(num)+".jpg")
+            test_labels.append(i)
 
-    lib8190.Ir2_judge('Gasyori100knock/Question_81_90/dataset/',test_filenames,database,filenames)
+    predict_labels = lib8190.Ir2_judge('Gasyori100knock/Question_81_90/dataset/',test_filenames,database,filenames)
+
+    accuracy = lib8190.Ir3_accuracy(test_labels, predict_labels)

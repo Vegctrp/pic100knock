@@ -10,12 +10,19 @@ from q61_70 import lib6170
 
 if __name__ == '__main__':
     img = cv2.imread("Gasyori100knock/Question_81_90/thorino.jpg")
-    
-    database = lib8190.Ir1_makedatabase('Gasyori100knock/Question_81_90/dataset/',['akahara','madara'],5)
+    filenames=[]
+    labels=[]
+    for i,name in enumerate(['akahara','madara']):
+        for num in range(1,6):
+            filenames.append("train_"+name+"_"+str(num)+".jpg")
+            labels.append(i)
+
+    database = lib8190.Ir1_makedatabase('Gasyori100knock/Question_81_90/dataset/',filenames,labels)
+    print(filenames, labels)
     print(database)
 
-    for i, path in enumerate(range(10)):
+    for i, path in enumerate(filenames):
         plt.subplot(2, 5, i+1)
-        plt.hist(database[i,:].ravel(), bins=12, rwidth=0.8)
+        plt.bar(range(1,13), database[i,:12].ravel())
         plt.title(path)
     plt.savefig('./q81_90/084.png')

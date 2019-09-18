@@ -56,34 +56,58 @@ def Harris_corner_detection2(img, ix2g, iy2g, ixyg, k, threshold):
 
 
 # 84
-def Ir1_makedatabase(path, namelist, picnum):
-    database = np.zeros((len(namelist)*picnum,13),dtype=np.int)
-    for i,name in enumerate(namelist):
-        for num in range(1,picnum+1):
-            place = path+"train_"+name+"_"+str(num)+".jpg"
-            img = cv2.imread(place)
-            redu = lib0110.color_reduction(img)
-            height, width, C = redu.shape
-            y = i*picnum+num-1
-            redu -= 32
-            redu /= 64
-            for x in range(12):
-                col = x // 4
-                level = x%4
-                database[y,x]=len(np.where(redu[:,:,col]==level)[0])
-            database[y,12]=i
+def Ir1_makedatabase(path, filenames, labels):
+    database = np.zeros((len(filenames),13),dtype=np.int)
+    for y,fl in enumerate(zip(filenames,labels)):
+        filename = fl[0]
+        label = fl[1]
+        #filename = "train_"+name+"_"+str(num)+".jpg"
+        place = path+filename
+        img = cv2.imread(place)
+        redu = lib0110.color_reduction(img)
+        height, width, C = redu.shape
+        redu -= 32
+        redu /= 64
+        for x in range(12):
+            col = x // 4
+            level = x%4
+            database[y,x]=len(np.where(redu[:,:,col]==level)[0])
+        database[y,12]=label
     return database
 
 # 85
-def Ir2_judge(path, database):
-    img = cv2.imread(path)
-    redu = lib0110.color_reduction(img)
-    height, width, C = redu.shape
-    redu -= 32
-    redu /= 64
-    hist = []
-    for x in range(12):
-        col = x // 4
-        level = x%4
-        hist[x]=len(np.where(redu[:,:,col]==level)[0])
-    
+def Ir2_judge(dirpath, test_filenames, database, train_filenames):
+    ans_labels=[]
+    for filename in test_filenames:
+        img = cv2.imread(dirpath+filename)
+        redu = lib0110.color_reduction(img)
+        height, width, C = redu.shape
+        redu -= 32
+        redu /= 64
+        hist = []
+        min_dist=1000000000
+        min_index=-1
+        for x in range(12):
+            col = x // 4
+            level = x%4
+            hist.append(len(np.where(redu[:,:,col]==level)[0]))
+        for tr in range(database.shape[0]):
+            dist = np.sum(np.abs(database[tr, :12] - hist))
+            print(str(tr)+' : '+str(dist))
+            if min_dist > dist:
+                min_dist = dist
+                min_index = tr
+        print(filename+' :')
+        print('\tnearest : '+train_filenames[min_index])
+        print('\tpredict : '+str(database[min_index, 12]))
+        ans_labels.append(database[min_index, 12])
+    return ans_labels
+
+# 86
+def Ir3_accuracy(ans_labels,pred_labels):
+    num = len(ans_labels)
+    correct = 0
+    for ans,pred in zip(ans_labels,pred_labels):
+        if ans==pred:
+            correct+=1
+    print("Accuracy : " + str(float(correct)/num) + '(' + str(correct) + '/' + str(num) + ')')
