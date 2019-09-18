@@ -54,7 +54,36 @@ def Harris_corner_detection2(img, ix2g, iy2g, ixyg, k, threshold):
     out[R >= np.max(R)*threshold] = (0,0,255)
     return out
 
-"""
+
 # 84
-def Image_recognition1(path):
-"""
+def Ir1_makedatabase(path, namelist, picnum):
+    database = np.zeros((len(namelist)*picnum,13),dtype=np.int)
+    for i,name in enumerate(namelist):
+        for num in range(1,picnum+1):
+            place = path+"train_"+name+"_"+str(num)+".jpg"
+            img = cv2.imread(place)
+            redu = lib0110.color_reduction(img)
+            height, width, C = redu.shape
+            y = i*picnum+num-1
+            redu -= 32
+            redu /= 64
+            for x in range(12):
+                col = x // 4
+                level = x%4
+                database[y,x]=len(np.where(redu[:,:,col]==level)[0])
+            database[y,12]=i
+    return database
+
+# 85
+def Ir2_judge(path, database):
+    img = cv2.imread(path)
+    redu = lib0110.color_reduction(img)
+    height, width, C = redu.shape
+    redu -= 32
+    redu /= 64
+    hist = []
+    for x in range(12):
+        col = x // 4
+        level = x%4
+        hist[x]=len(np.where(redu[:,:,col]==level)[0])
+    

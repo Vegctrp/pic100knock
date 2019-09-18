@@ -12,10 +12,10 @@ if __name__ == '__main__':
     img = cv2.imread("Gasyori100knock/Question_81_90/thorino.jpg")
     
     database = lib8190.Ir1_makedatabase('Gasyori100knock/Question_81_90/dataset/',['akahara','madara'],5)
-    print(database)
-
-    for i, path in enumerate(range(10)):
-        plt.subplot(2, 5, i+1)
-        plt.hist(database[i,:].ravel(), bins=12, rwidth=0.8)
-        plt.title(path)
-    plt.savefig('./q81_90/084.png')
+    
+    out = lib8190.Harris_corner_detection(img, Gk=3, Gsigma=3, k=0.04, threshold=0.1).clip(0,255).astype(np.uint8)
+    
+    cv2.imshow("imori", out)
+    cv2.waitKey(0)
+    cv2.imwrite("q81_90/083.jpg", out)
+    cv2.destroyAllWindows()
