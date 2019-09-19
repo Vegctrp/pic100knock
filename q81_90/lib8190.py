@@ -62,7 +62,6 @@ def Ir1_makedatabase(path, filenames, labels):
     for y,fl in enumerate(zip(filenames,labels)):
         filename = fl[0]
         label = fl[1]
-        #filename = "train_"+name+"_"+str(num)+".jpg"
         place = path+filename
         img = cv2.imread(place)
         redu = lib0110.color_reduction(img)
@@ -145,3 +144,50 @@ def Ir_kNN(dirpath, train_filenames, train_labels, test_filenames, test_labels, 
         print('\tpredict : '+str(Counter(top_labels).most_common(1)[0][0]))
         
     return pred_labels
+
+
+# 88
+def Kmeans1_makedatabase(path, filenames, classes, seed=1):
+    database = np.zeros((len(filenames),13),dtype=np.int)
+    classmean = np.zeros((classes,12))
+    np.random.seed(seed)
+    for y,filename in enumerate(filenames):
+        place = path+filename
+        img = cv2.imread(place)
+        redu = lib0110.color_reduction(img)
+        height, width, C = redu.shape
+        redu -= 32
+        redu /= 64
+        for x in range(12):
+            col = x // 4
+            level = x%4
+            database[y,x]=len(np.where(redu[:,:,col]==level)[0])
+            cl = int(np.random.rand()*classes)
+            database[y,12] = cl
+        classmean[cl, :] += database[y, :12]
+    for i in range(classes):
+        classmean[i, :] /= len(np.where(database[:, 12] == i)[0])
+    return database, classmean
+
+# 89
+def Kmeans2_clustering(database, classmean):
+    for i,elem in enumerate(database):
+        dists = []
+        status = 0
+        for grab in classmean:
+            dists.append(np.sum(np.abs(elem[:12] - grab)))
+        print(dists)
+        min_index = np.argmin(np.array(dists))
+        print(np.argmin(np.array(dists)))
+        if database[i,12] != min_index:
+            status += 1
+            database[i,12] = min_index
+    return database, classmean, status
+
+def Kmeans2(path, filenames, classes, seed=1):
+    database, classmean = Kmeans1_makedatabase(path, filenames, classes, seed)
+    while True:
+        database, classmean, status = Kmeans2_clustering(database, classmean)
+        if status==0:
+            break
+    return database[:, 12].ravel()
