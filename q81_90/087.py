@@ -17,11 +17,11 @@ if __name__ == '__main__':
             filenames.append("train_"+name+"_"+str(num)+".jpg")
             labels.append(i)
 
-    database = lib8190.Ir1_makedatabase('Gasyori100knock/Question_81_90/dataset/',filenames,labels)
-    
     test_filenames=[]
+    test_labels=[]
     for i,name in enumerate(['akahara','madara']):
         for num in range(1,3):
             test_filenames.append("test_"+name+"_"+str(num)+".jpg")
+            test_labels.append(i)
 
-    lib8190.Ir2_judge('Gasyori100knock/Question_81_90/dataset/',filenames,database,test_filenames)
+    lib8190.Ir_kNN('Gasyori100knock/Question_81_90/dataset/',filenames,labels,test_filenames,test_labels,3)

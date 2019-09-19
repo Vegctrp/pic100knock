@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from collections import Counter
 import sys,os
 sys.path.append(os.getcwd())
 from q01_10 import lib0110
@@ -76,7 +77,7 @@ def Ir1_makedatabase(path, filenames, labels):
     return database
 
 # 85
-def Ir2_judge(dirpath, test_filenames, database, train_filenames):
+def Ir2_judge(dirpath, train_filenames, database, test_filenames):
     ans_labels=[]
     for filename in test_filenames:
         img = cv2.imread(dirpath+filename)
@@ -110,4 +111,37 @@ def Ir3_accuracy(ans_labels,pred_labels):
     for ans,pred in zip(ans_labels,pred_labels):
         if ans==pred:
             correct+=1
-    print("Accuracy : " + str(float(correct)/num) + '(' + str(correct) + '/' + str(num) + ')')
+            accuracy = float(correct)/num
+    print("Accuracy : " + str(accuracy) + '(' + str(correct) + '/' + str(num) + ')')
+
+# 87
+def Ir_kNN(dirpath, train_filenames, train_labels, test_filenames, test_labels, k):
+    database = Ir1_makedatabase('Gasyori100knock/Question_81_90/dataset/', train_filenames, train_labels)
+    pred_labels=[]
+    for filename in test_filenames:
+        img = cv2.imread(dirpath+filename)
+        redu = lib0110.color_reduction(img)
+        redu -= 32
+        redu /= 64
+        hist = []
+        dists = []
+        for x in range(12):
+            col = x // 4
+            level = x%4
+            hist.append(len(np.where(redu[:,:,col]==level)[0]))
+        for tr in range(database.shape[0]):
+            dist = np.sum(np.abs(database[tr, :12] - hist))
+            print(str(tr)+' : '+str(dist))
+            dists.append(dist)
+
+        ndists = np.array(dists)
+        tops = np.argsort(ndists)[:k]
+        top_labels = database[tops,12]
+
+        print(filename+' :')
+        print('\tNearestNeighbor : ')
+        for index,label in zip(np.argsort(ndists)[:k], top_labels):
+            print('\t\t'+train_filenames[index]+'('+str(label)+')')
+        print('\tpredict : '+str(Counter(top_labels).most_common(1)[0][0]))
+        
+    return pred_labels

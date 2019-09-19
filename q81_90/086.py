@@ -26,6 +26,6 @@ if __name__ == '__main__':
             test_filenames.append("test_"+name+"_"+str(num)+".jpg")
             test_labels.append(i)
 
-    predict_labels = lib8190.Ir2_judge('Gasyori100knock/Question_81_90/dataset/',test_filenames,database,filenames)
+    predict_labels = lib8190.Ir2_judge('Gasyori100knock/Question_81_90/dataset/',filenames,database,test_filenames)
 
-    accuracy = lib8190.Ir3_accuracy(test_labels, predict_labels)
+    lib8190.Ir3_accuracy(test_labels, predict_labels)
