@@ -9,7 +9,6 @@ from q01_10 import lib0110
 from q61_70 import lib6170
 
 if __name__ == '__main__':
-    img = cv2.imread("Gasyori100knock/Question_81_90/thorino.jpg")
     filenames=[]
     labels=[]
     for i,name in enumerate(['akahara','madara']):

@@ -4,7 +4,6 @@ import lib8190
 import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
-    img = cv2.imread("Gasyori100knock/Question_81_90/thorino.jpg")
     filenames=[]
     for i,name in enumerate(['akahara','madara']):
         for num in range(1,6):
