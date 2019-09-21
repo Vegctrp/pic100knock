@@ -53,3 +53,38 @@ def Kmeans_cr(img, classes, seed=-1):
     while status:
         class_center, status = Kmeans_cr2_redis(rimg, class_center, classes)
     return Kmeans_cr3_draw(img, class_center, classes)
+
+
+# 93
+def area(rect):
+    return max(rect[2]-rect[0], 0) * max(rect[3]-rect[1], 0)
+
+def calc_IoU(rect1, rect2):
+    rect1 = rect1.astype(np.float32)
+    rect2 = rect2.astype(np.float32)
+    rol = np.array((max(rect1[0],rect2[0]), max(rect1[1],rect2[1]), min(rect1[2],rect2[2]), min(rect1[3],rect2[3])))
+    iou = area(rol) / (area(rect1) + area(rect2) - area(rol))
+    return iou
+
+
+# 94
+def random_cropping(img, gt, sizex, sizey, num, seed):
+    height, width, _ = img.shape
+    np.random.seed(seed)
+    rects = []
+    labels = []
+    i2 = img.copy()
+    for _ in range(num):
+        x1 = np.random.randint(width-60)
+        y1 = np.random.randint(height-60)
+        rect = np.array((x1, y1, x1+sizex, y1+sizey), dtype=np.float32)
+        rects.append(rect)
+        iou = calc_IoU(gt, rect)
+        label = 1 if iou>=0.5 else 0
+        labels.append(label)
+        if label==0:
+            i2 = cv2.rectangle(i2, (rect[0],rect[1]), (rect[2],rect[3]), (255,0,0))
+        elif label==1:
+            i2 = cv2.rectangle(i2, (rect[0],rect[1]), (rect[2],rect[3]), (0,0,255))
+    i2 = cv2.rectangle(i2, (gt[0],gt[1]), (gt[2],gt[3]), (0,255,0))
+    return i2, rects, labels
