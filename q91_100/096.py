@@ -95,8 +95,6 @@ if __name__ == '__main__':
     test_t = np.expand_dims(test_t, axis=-1)
 
     nn = NN(ind=train_x.shape[1], lr=0.01, seed=0)
-    print("hoge")
     nn = train_nn(nn, train_x, train_t, 10000)
-    print("hgoe1")
     test_nn(nn, train_x, train_t)
     test_nn(nn, test_x, test_t)
