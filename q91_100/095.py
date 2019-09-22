@@ -36,7 +36,7 @@ class NN:
         self.w2 -= self.lr * grad_w2
         self.b2 -= self.lr * grad_b2
 
-        grad_u1 = np.dot(En, self.wout.T) * self.z2 * (1 - self.z2)
+        grad_u1 = np.dot(grad_u2, self.w2.T) * self.z2 * (1 - self.z2)
         grad_w1 = np.dot(self.z1.T, grad_u1)
         grad_b1 = np.dot(np.ones([grad_u1.shape[0]]), grad_u1)
         self.w1 -= self.lr * grad_w1
@@ -63,5 +63,5 @@ if __name__ == '__main__':
     train_t = np.array([[0], [1], [1], [0]], dtype=np.float32)
 
     nn = NN(ind=train_x.shape[1], seed=0)
-    nn = train_nn(nn, train_x, train_t, 1000)
+    nn = train_nn(nn, train_x, train_t, 5000)
     test_nn(nn, train_x, train_t)

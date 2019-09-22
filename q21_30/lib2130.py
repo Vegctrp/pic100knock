@@ -94,8 +94,8 @@ def Bi_linear_interpolation(img, ax, ay):
     x = x / ax
     ny = np.floor(y).astype(np.int)
     nx = np.floor(x).astype(np.int)
-    ny = np.minimum(ny, width-2)
-    nx = np.minimum(nx, height-2)
+    ny = np.minimum(ny, height-2)
+    nx = np.minimum(nx, width-2)
     dy = y - ny
     dx = x - nx
     dy = np.repeat(np.expand_dims(dy, axis=-1), C, axis=-1)

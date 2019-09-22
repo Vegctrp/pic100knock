@@ -227,7 +227,7 @@ def HOG3_normalization(img, C=3, epsilon=1):
     C, height, width = img.shape
     for y in range(height):
         for x in range(width):
-            img[:, y, x] /= np.sqrt(np.sum(img[:, max(y-1,0):min(y+2,height), max(x-1,0):min(x+2,width)]) + epsilon)
+            img[:, y, x] /= np.sqrt(np.sum(img[:, max(y-1,0):min(y+2,height), max(x-1,0):min(x+2,width)] ** 2) + epsilon)
     return img
 
 # 69
