@@ -184,7 +184,7 @@ def Thinning_ZhangSuen(img):
 
 # 66
 def HOG1_gradient(img):
-    gray = lib0110.BGR2GRAY(img)
+    gray = lib0110.BGR2GRAY(img).astype(np.float32)
     height, width = gray.shape
 
     pad = np.pad(gray, [(1,1),(1,1)], 'edge')
@@ -192,7 +192,7 @@ def HOG1_gradient(img):
     gy = pad[2:, 1:-1] - pad[:-2, 1:-1]
 
     mag = np.sqrt(gx*gx + gy*gy)
-    gx[gx==0] = 1e-5
+    gx[gx==0] = 1e-6
     ang = np.arctan(gy / gx)
 
     ang[ang < 0] = np.pi + ang[ang < 0]

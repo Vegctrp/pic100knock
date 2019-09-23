@@ -235,3 +235,92 @@ def my_object_detection(trs, tes, nns, jus, HOG_N):
     rects, feats = Object_detection1_getpart(te_img, te_sizes, te_dx, te_dy, te_hogx, te_hogy, HOG_N)
     out, cor_rects, cor_scores = Object_detection2_judge(te_img, nn, feats, rects, threshold=ju_threshold)
     return out, cor_rects, cor_scores
+
+# 99
+def Object_detection3_nms(img, rects, scores, threshold):
+    flag = True
+    selected_rects = []
+    selected_scores = []
+    #for rect,score in zip(rects, scores):
+    #    print(rect,score)
+    while flag:
+        ind = np.argmax(scores)
+        selected_rects.append(rects[ind])
+        selected_scores.append(scores[ind])
+        scores[ind] = 0
+        for i,rect in enumerate(rects):
+            iou = calc_IoU(np.array(rects[ind]), np.array(rect))
+            if iou >= threshold:
+                scores[i] = 0
+        if np.sum(scores) == 0:
+            flag = 0
+    #print("rects : ",selected_rects, "scores : ",selected_scores)
+    return selected_rects, selected_scores
+
+def Object_detection4_draw(img, rects, scores):
+    for rect,score in zip(rects, scores):
+        img = cv2.rectangle(img, (rect[0],rect[1]), (rect[2],rect[3]), (0,0,255), 1)
+        img = cv2.putText(img, str(score[0])[:4], (rect[0],rect[1]+9), cv2.FONT_HERSHEY_COMPLEX, 0.4, (0, 255, 255), 1)
+    return img
+
+def Object_detection5_evaluate(img, rects, scores, gts, threshold):
+    #recall
+    recall_num = gts.shape[0]
+    recall_correct = 0
+    for gt in gts:
+        for rect in rects:
+            iou = calc_IoU(gt, np.array(rect))
+            #print(iou)
+            if iou >= threshold:
+                recall_correct += 1
+                break
+    Recall = float(recall_correct)/recall_num
+    print("Recall : ", Recall, "(",recall_correct,":",recall_num,")")
+
+    #precision
+    precision_num = len(rects)
+    precision_correct = 0
+    mAP_judge = []
+    for rect in rects:
+        flag = False
+        for gt in gts:
+            iou = calc_IoU(gt, np.array(rect))
+            if iou >= threshold:
+                flag = True
+                break
+        if flag:
+            precision_correct += 1
+            mAP_judge.append(1)
+        else:
+            mAP_judge.append(0)
+    Precision = float(precision_correct)/precision_num
+    print("Precision : ", Precision, "(",precision_correct,":",precision_num,")")
+
+    #fscore
+    if Recall+Precision == 0:
+        fscore = 0
+    else:
+        fscore = 2 * Recall * Precision / (Recall + Precision)
+    print("F-score : ", fscore)
+
+    #mAP
+    mAP_value = 0
+    mAP_num = 0
+    for i,m in enumerate(mAP_judge):
+        if m==1:
+            mAP_num += 1
+            mAP_value += mAP_num / (i+1)
+    if not mAP_num==0:
+        mAP_value /= mAP_num
+    print("mAP : ", mAP_value)
+
+    # drawing
+    for rect,score,j in zip(rects, scores, mAP_judge):
+        if j == 1:
+            img = cv2.rectangle(img, (rect[0],rect[1]), (rect[2],rect[3]), (0,0,255), 1)
+        else:
+            img = cv2.rectangle(img, (rect[0],rect[1]), (rect[2],rect[3]), (255,0,0), 1)
+        img = cv2.putText(img, str(score[0])[:4], (rect[0],rect[1]+9), cv2.FONT_HERSHEY_COMPLEX, 0.4, (0, 255, 255), 1)
+    for gt in gts:
+        img = cv2.rectangle(img, (gt[0],gt[1]), (gt[2],gt[3]), (0,255,0))
+    return img
