@@ -70,9 +70,10 @@ def calc_IoU(rect1, rect2):
 
 
 # 94
-def random_cropping(img, gt, sizex, sizey, num, seed):
+def random_cropping(img, gt, sizex, sizey, num, seed=-1):
     height, width, _ = img.shape
-    np.random.seed(seed)
+    if seed != -1:
+        np.random.seed(seed)
     rects = []
     labels = []
     i2 = img.copy()
@@ -122,8 +123,8 @@ def test_nn(nn, test_x, test_t):
     for j in range(len(test_x)):
         x = test_x[j]
         t = test_t[j][0]
-        #print("in:", x, "pred:", nn.forward(x), "ans:", t)
-        ans = 0 if nn.forward(x)<=0.5 else 1
+        score = nn.forward(x)
+        ans = 0 if score<=0.5 else 1
         if t==ans:
             correct += 1
     print("datasize : ", num, ", correct : ", correct)
@@ -198,9 +199,39 @@ def Object_detection1_getpart(img, sizes, dx, dy, hogx, hogy, hogn=8):
 # 98
 def Object_detection2_judge(img, nn, feats, rects, threshold):
     i2 = img.copy()
+    cor_rects = []
+    cor_scores = []
     for feat, rect in zip(feats, rects):
         score = nn.forward(feat)
         if score >= threshold:
             print(rect, score)
+            cor_rects.append(rect)
+            cor_scores.append(score)
             i2 = cv2.rectangle(i2, (rect[0],rect[1]), (rect[2],rect[3]), (0,0,255), 1)
-    return i2
+    return i2, cor_rects, cor_scores
+
+def my_object_detection(trs, tes, nns, jus, HOG_N):
+    tr_img, tr_gt, tr_sizex, tr_sizey, tr_num, tr_seed, tr_rex, tr_rey = trs
+    te_img, te_sizes, te_dx, te_dy, te_hogx, te_hogy = tes
+    nn_lr, nn_seed, nn_num = nns
+    ju_threshold = jus
+    #HOG_N
+
+    _, tr_rects, tr_labels = random_cropping(tr_img, tr_gt, tr_sizex, tr_sizey, tr_num, tr_seed)
+    tr_database = nn_getHOGs(tr_img, tr_rects, tr_rex, tr_rey, HOG_N)
+
+    train_x = np.array(tr_database)
+    train_t = np.array(tr_labels)
+    train_t = np.expand_dims(train_t, axis=-1).astype(np.float32)
+
+    nn = NN(ind=train_x.shape[1], lr=nn_lr, seed=nn_seed)
+    nn = train_nn(nn, train_x, train_t, nn_num)
+
+    test_x = np.array(tr_database[160:])
+    test_t = np.array(tr_labels[160:])
+    test_t = np.expand_dims(test_t, axis=-1).astype(np.float32)
+    test_nn(nn, test_x, test_t)
+
+    rects, feats = Object_detection1_getpart(te_img, te_sizes, te_dx, te_dy, te_hogx, te_hogy, HOG_N)
+    out, cor_rects, cor_scores = Object_detection2_judge(te_img, nn, feats, rects, threshold=ju_threshold)
+    return out, cor_rects, cor_scores
